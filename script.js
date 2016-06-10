@@ -1,4 +1,4 @@
-var LAYER = 'precip_data',
+var LAYER = 'precipitation.geojson',
     METRIC = 'total',
 	COLORS = ['#d9160d', '#d96704', '#f2d888', '#bad9c8', '#4988bf', '#033e8c'],
 	BREAKS = [0, 0.1, 0.3, 0.5, 0.8, 1.0],
@@ -22,9 +22,9 @@ var map = new mapboxgl.Map({
 });
 
 map.on('load', function () {
-	map.addSource('precip_data', {
-	  type: 'vector',
-	  url: 'mapbox://skaisericprb.16q0uit8',
+	map.addSource('precipitation', {
+	  type: 'geojson',
+	  data: 'precipitation.geojson',
 	
 	});
 	for (i=0; i < COLORS.length; i++) {
@@ -36,9 +36,8 @@ map.on('load', function () {
 		map.addLayer({
 			id: NAMES[i],
 			type: 'fill',
-			source: 'precip_data',
+			source: 'precipitation',
 			interactive: true,
-			'source-layer': LAYER,
 			layout: {},
 			filter: FILTERUSE,
 			paint: {
@@ -51,32 +50,52 @@ map.on('load', function () {
 	map.addLayer({
 		id: 'hover',
 		type: 'line',
-		source: 'precip_data',
-		'source-layer': LAYER,
+		source: 'precipitation',
+		interactive: true,
 		layout: {},
+		filter: ['==', 'huc_code', ''],		
 		paint: {
 			'line-color': "#000000",
 			'line-width': 2
 		},
-		filter: ['==', 'huc_code', '']
+
 	});
 	
-	map.on("mousemove", function(e) {
-		var features = map.queryRenderedFeatures(e.point);
-        document.getElementById('tooltip').innerHTML = "Watershed: " + features[0].properties.huc_code + "<br />Total Rainfall (in): " + features[0].properties.total;		
-		
-	});
 	
+	
+//	map.on("mousemove", function(e) {
+//		var features = map.queryRenderedFeatures(e.point);
+//        document.getElementById('tooltip').innerHTML = "Watershed: " + features[0].properties.huc_name + "<br />Total Rainfall (in): " + features[0].properties.total;		
+//	});
+
 //    map.on("mousemove", function(e) {
-//	    var features = map.queryRenderedFeatures(e.point, { 
-//		  layers: ["NAMES"]
-//		});
+//	    var features = map.queryRenderedFeatures(e.point, { layers: ['NAMES'] });
 //	    if (features.length) {
-//		    map.setFilter('hover', ['==', 'huc_code', features[0].properties.huc_code]);
+//		    map.setFilter("hover", ["==", "huc_code", features[0].properties.huc_code]);
 //	    } else {
-//		    map.setFilter('hover', ['==', 'huc_code', '']);
+//		    map.setFilter("hover", ["==", "huc_code", ""]);
 //	    }
-//    });		
+//    });
+
+     map.on("mousemove", function(e) {
+		 map.featuresAt(e.point, { 
+			 layers: 'NAMES' 
+		 }, function (err, features) {
+			 if (!err, features.length) {
+				 document.getElementById('tooltip').innerHTML = "Watershed: " + features[0].properties.huc_name + "<br />Total Rainfall (in): " + features[0].properties.total
+				 map.setFilter("hover", ["==", "huc_code", features[0].properties.huc_code]);
+			 } else {
+				 map.setFilter("hover", ["==", "huc_code", ""]);
+				 document.getElementById('tooltip').innerHTML = "";
+			 }
+		});
+	 });	
+
+		 
+	 
+
+    map.addControl(new mapboxgl.Navigation());	
+
 });
 
 
