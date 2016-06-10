@@ -26,8 +26,8 @@ p.footer-text {
 #sidebar {
 	position: absolute;
 	top: 15px;
-	bottom: 15px;
-	width: 300px;
+	bottom: 650px;
+	width: 350px;
 	overflow: auto;
 	background: rgba(255, 255, 255, 0.7);
 	font-family: "Arial";
