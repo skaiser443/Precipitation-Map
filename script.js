@@ -95,6 +95,12 @@ map.on('load', function () {
 
 
     map.addControl(new mapboxgl.Navigation());
+	
+    var yesterday = new Date();
+	var dd = yesterday.getDate() - 1;
+	var mm = yesterday.getMonth() + 1;
+	var yyyy = yesterday.getFullYear();
+    document.getElementById('time').innerHTML = mm + "/" + dd + "/" + yyyy;
 
 	
 
